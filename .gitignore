@@ -1,3 +1,9 @@
+# My Ignores
+*DS_Store
+bin/*
+!bin/.gitkeep
+
+
 # Prerequisites
 *.d
 
