@@ -23,6 +23,14 @@
 - **Rule 10**: There is no Roman numeral for zero (0).
 
 ### Restrictive Rules
-
 2, 3, 4, 10
 
+### Rules TODO
+1, 4, 5, 6, 7
+
+
+
+
+# Contributions
+
+- [Roman Numerals - Chart, Rules | Roman Counting | Roman Letters](https://www.cuemath.com/numbers/roman-numerals/)
