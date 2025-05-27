@@ -3,12 +3,14 @@
 #include <map>
 #include <stdexcept>
 #include <cassert>
+#include <ranges>
+#include <random>
 
 int runTests();
 int romanToNum(std::string romanNumeral);
+std::string numToRoman(int inputInt);
 
 int main(int argc, char *argv[]) {
-
     if (argc < 2) {
         std::cerr << "Invalid Command Line Input...\n";
         std::cerr << "Must have one additional input being `test` or a series of roman numerals as input\n";
@@ -21,16 +23,36 @@ int main(int argc, char *argv[]) {
     }
 
     for (int i = 1; i < argc; i++) {
-        std::string romanNumeral = std::string(argv[i]);
-
-        int intConversion;
+        bool isRoman = false;
+        std::string romanNumeralInput;
+        int inputInt;
         try {
-            intConversion = romanToNum(romanNumeral);
-        } catch(const std::exception& e) {
-            std::cout << "Given roman numeral: `" << romanNumeral << "` " << e.what() << '\n';
-            continue;
+            inputInt = std::stoi(argv[i]);
+        } catch(const std::invalid_argument& e) {
+            isRoman = true;
+            romanNumeralInput = argv[i];
         }
-        std::cout << "Conversion of Roman Numeral: " << romanNumeral << " -> " << intConversion << '\n';
+
+        if (isRoman) {
+            int intConversion;
+            try {
+                intConversion = romanToNum(romanNumeralInput);
+            } catch(const std::invalid_argument& e) {
+                std::cout << "Given roman numeral: `" << romanNumeralInput << "` " << e.what() << '\n';
+                continue;
+            }
+            std::cout << "Conversion of Roman Numeral: " << romanNumeralInput << " -> " << intConversion << '\n';
+        } else {
+            std::string romanNumeralConversion;
+            try {
+                romanNumeralConversion = numToRoman(inputInt);
+            } catch(const std::invalid_argument& e) {
+                std::cout << "Given Numer: `" << inputInt << "` " << e.what() << '\n';
+                continue;
+            }
+            std::cout << "Conversion of Number: " << inputInt << " -> " << romanNumeralConversion << '\n';
+        }
+
     }
     return 0;
 }
@@ -63,6 +85,8 @@ int romanToNum(std::string romanNumeral) {
         for (int j = i + 1; j < romanNumeral.size(); j++) {
             if (romanNumeral[j] == charToCheck) {
                 counter += 1;
+            } else {
+                break;
             }
             if (counter >= 4) {
                 throw std::invalid_argument("is invalid by rule 2");
@@ -84,9 +108,7 @@ int romanToNum(std::string romanNumeral) {
         }
     }
 
-
     // Catch Subtractions (by rule 4 there are only 6 legal subtractions, all of which is 2 characters)
-
     std::vector<std::string> subtractionSequences;
     for (int i = 1; i < romanNumeral.size(); i++) {
         int currVal = romanMapping.at(romanNumeral.at(i));
@@ -107,9 +129,7 @@ int romanToNum(std::string romanNumeral) {
     }
 
     const std::vector<std::string> validSubtractions = { "IV", "IX", "XL", "XC", "CD", "CM" };
-
     for (const std::string&  seq : subtractionSequences) {
-
         bool seqValid = false;
         for (int i = 0; i < validSubtractions.size(); i++) {
             if (seq == validSubtractions.at(i)) {
@@ -126,7 +146,7 @@ int romanToNum(std::string romanNumeral) {
     for (const std::string& seq : subtractionSequences) {
         size_t subtractionIndex = romanNumeral.find(seq);
         if (subtractionIndex != std::string::npos) {
-            romanNumeral.erase(subtractionIndex, subtractionIndex+2);
+            romanNumeral.erase(subtractionIndex, 2);
             outp += romanMapping.at(seq.at(1)) - romanMapping.at(seq.at(0));
         }
     }
@@ -138,10 +158,40 @@ int romanToNum(std::string romanNumeral) {
     return outp;
 }
 
+std::string numToRoman(int inputInt) {
+    // Input Validation
+    if (inputInt <= 0) {
+        throw std::invalid_argument("cannot be non-positve");
+    }
+    const std::map<int, std::string> romanMapping = {
+        {1, "I"},
+        {4, "IV"},
+        {5, "V"},
+        {9, "IX"},
+        {10, "X"},
+        {40, "XL"},
+        {50, "L"},
+        {90, "XC"},
+        {100, "C"},
+        {400, "CD"},
+        {500, "D"},
+        {900, "CM"},
+        {1000, "M"},
+    };
+
+    std::string outp;
+    for (const auto& [key, value] : std::views::reverse(romanMapping)) {
+        while (inputInt >= key) {
+            outp += value;
+            inputInt -= key;
+        }
+    }
+    return outp;
+}
+
 
 int runTests() {
-
-    // Checking 1-20
+    // -------------------------- Checking 1-20 -------------------------- //
     const std::map<std::string, int> oneToTwenty = {
         {"I", 1}, {"II", 2}, {"III", 3}, {"IV", 4}, {"V", 5}, {"VI", 6}, {"VII", 7}, {"VIII", 8}, {"IX", 9}, 
         {"X", 10}, {"XI", 11}, {"XII", 12}, {"XIII", 13}, {"XIV", 14}, {"XV", 15}, {"XVI", 16}, {"XVII", 17}, 
@@ -162,7 +212,7 @@ int runTests() {
     }
 
 
-    // Checking 1-20
+    // -------------------------- Checking Values in the thousands -------------------------- //
     const std::map<std::string, int> thousands = {
         {"MI", 1001}, {"MVI", 1006}, {"MLI", 1051}, {"MLXXI", 1071}, {"MLXXVI", 1076}, {"MCXXI", 1121}, {"MCXXVI", 1126},
         {"MCLXXI", 1171}, {"MCLXXVI", 1176}, {"MII", 1002}, {"MVII", 1007}, {"MLII", 1052}, {"MLXXII", 1072}, {"MLXXVII", 1077},
@@ -185,8 +235,46 @@ int runTests() {
         } 
     }
 
-    return 0;
+    // -------------------------- Testing integer to Roman 1-20 -------------------------- //
+    std::string romanNumeralConversion;
+    for (const auto& [key, value] : std::views::reverse(oneToTwenty)) {
+        try {
+            romanNumeralConversion = numToRoman(value);
+            assert(romanNumeralConversion == key);
+            std::cout << "Correct conversion of number: " << value << " -> " << romanNumeralConversion << '\n';
+        } catch(const std::invalid_argument& e) {
+            std::cout << "Given Numer: `" << value << "` " << e.what() << '\n';
+            return 1;
+        }
+    }
 
+
+    // -------------------------- Convert 100 Random Numers to roman then back to decimal -------------------------- //
+    std::random_device rd{};
+    std::mt19937 gen{rd()};
+    std::uniform_int_distribution<int> uniformIntDistr(1, 3000);
+    int randomNum;
+    for (int i  = 0; i < 1000; i++) {
+        randomNum = uniformIntDistr(gen);
+        std::cout << "Converting " << randomNum << "\t";
+        try {
+            romanNumeralConversion = numToRoman(randomNum);
+        } catch(const std::invalid_argument& e) {
+            std::cout << "Given Numer: `" << randomNum << "` " << e.what() << '\n';
+            return 1;
+        }
+        try {
+            intConversion = romanToNum(romanNumeralConversion);
+        } catch(const std::invalid_argument& e) {
+            std::cerr << '`' << romanNumeralConversion << "` Caused an error of: " << e.what() << '\n';
+            return 1;
+        } 
+        assert(randomNum == intConversion);
+        std::cout << "Correct converted the random number: " << randomNum << " to " << romanNumeralConversion <<
+            " then back to: " << intConversion << '\n';
+    }
+
+    return 0;
 }
 
 
