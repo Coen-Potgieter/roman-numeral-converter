@@ -1,6 +1,79 @@
-# roman-numeral-converter
+# Roman Numeral Converter
+
+---
+
+## 🚀 Overview
+
+A lightweight C++ command-line tool that converts between **Roman numerals and integers**, supporting values from **1 to 3999**.
+
+Built in a day to stay sane during exams—because writing clean logic is more therapeutic than cramming. Also sparked by a book I’m reading that uses Roman numerals for chapters, so I built this to better understand how to read and interpret them.
+
+## 📁 Project Structure
+
+```plaintext
+roman-numeral-converter
+├── bin/
+├── src/
+│   └── main.cpp
+├── Makefile
+└── README.md
+```
+
+## 🛠️ Usage
+
+Make sure you're in the project root: `roman-numeral-converter/`
+
+### ✅ Build the program
+
+```bash
+make build
+```
+
+### 🔁 Convert Roman numerals and integers
+
+```bash
+make run ARGS="XIV 2024 IX"
+```
+
+You can mix multiple inputs (Roman numerals or integers). The program will:
+
+- Convert each input in order
+- Print the conversion result
+- Handle invalid input gracefully
+
+## 🧪 Run Tests
+
+```bash
+make run test
+```
+
+Test suite includes:
+
+1. Roman numeral conversions from I to XX
+2. Large numerals (e.g., MCMXCIV)
+3. Integer-to-Roman for values 1–20
+4. 1000 randomized round-trip conversions (int → Roman → int)
+
+
+## ⚠️ Notes
+
+- Only accepts **uppercase** Roman numerals (`XV`, not `xv`)
+- Valid range: **1 to 3999**
+- Invalid inputs return an error message; program continues
+
+
+## 🧠 Why This Exists
+
+A quick mental break from exams, and a chance to:
+
+- Practice C++
+- Reinforce Roman numeral logic
+- Bootstrap simple test coverage using assertions
+
 
 ## Rules
+
+These were the rules I used, taken from: [Roman Numerals - Chart, Rules | Roman Counting | Roman Letters](https://www.cuemath.com/numbers/roman-numerals/)
 
 - **Rule 1**: When certain numerals are repeated, the number represented by them is their sum. For example, II = 1 + 1 = 2, or XX = 10 + 10 = 20, or, XXX = 10 + 10 + 10 = 30.
 
@@ -21,15 +94,6 @@
 - **Rule 9**: Roman numerals do not follow any place value system.
 
 - **Rule 10**: There is no Roman numeral for zero (0).
-
-### Restrictive Rules
-2, 3, 4, 10
-
-### Rules TODO
-1, 4, 5, 6, 7
-
-
-
 
 # Contributions
 

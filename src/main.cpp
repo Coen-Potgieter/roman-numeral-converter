@@ -163,6 +163,10 @@ std::string numToRoman(int inputInt) {
     if (inputInt <= 0) {
         throw std::invalid_argument("cannot be non-positve");
     }
+    if (inputInt > 3999) {
+        throw std::invalid_argument("cannot be greater than 3999");
+    }
+
     const std::map<int, std::string> romanMapping = {
         {1, "I"},
         {4, "IV"},
@@ -249,10 +253,10 @@ int runTests() {
     }
 
 
-    // -------------------------- Convert 100 Random Numers to roman then back to decimal -------------------------- //
+    // -------------------------- Convert 1000 Random Numers to roman then back to decimal -------------------------- //
     std::random_device rd{};
     std::mt19937 gen{rd()};
-    std::uniform_int_distribution<int> uniformIntDistr(1, 3000);
+    std::uniform_int_distribution<int> uniformIntDistr(1, 3999);
     int randomNum;
     for (int i  = 0; i < 1000; i++) {
         randomNum = uniformIntDistr(gen);
