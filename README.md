@@ -32,7 +32,7 @@ make build
 ### 🔁 Convert Roman numerals and integers
 
 ```bash
-make run ARGS="XIV 2024 IX"
+make run XIV 2024 IX
 ```
 
 You can mix multiple inputs (Roman numerals or integers). The program will:
